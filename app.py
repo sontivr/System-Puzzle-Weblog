@@ -19,16 +19,20 @@ def index():
     all = cur.fetchone()[0]
 
     # Get number of all succesful requests
-    sql_success = """SELECT COUNT(*) FROM weblogs WHERE status LIKE \'2__\';"""
+    sql_success = """SELECT COUNT(*), source  FROM weblogs WHERE status LIKE \'2__\' group by source order by 2;"""
     cur.execute(sql_success)
-    success = cur.fetchone()[0]
+    local_success  = cur.fetchone()[0]
+    remote_success  = cur.fetchone()[0]
+
+
 
     # Determine rate if there was at least one request
     rate = "No entries yet!"
     if all != 0:
-        rate = str(success / all)
+        local_rate = str(local_success / all)
+        remote_rate = str(remote_success / all)
 
-    return render_template('index.html', rate = rate)
+    return render_template('index.html', local_rate = local_rate, remote_rate = remote_rate)
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0')
